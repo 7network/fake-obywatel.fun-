@@ -54,23 +54,32 @@ imageInput.addEventListener('change', (event) => {
     var data = new FormData();
     data.append("image", file);
 
-    fetch('	https://api.imgur.com/3/image' ,{
+    // Upload to imgbb API
+    fetch('https://api.imgbb.com/1/upload?key=4fc0cd0dc56c3ee9daa4a08d1cce061f', {
         method: 'POST',
-        headers: {
-            'Authorization': 'Client-ID ec67bcef2e19c08'
-        },
         body: data
     })
     .then(result => result.json())
     .then(response => {
+        console.log('imgbb response:', response);
         
-        var url = response.data.link;
-        upload.classList.remove("error_shown")
-        upload.setAttribute("selected", url);
-        upload.classList.add("upload_loaded");
+        if (response.success) {
+            var url = response.data.url;
+            upload.classList.remove("error_shown")
+            upload.setAttribute("selected", url);
+            upload.classList.add("upload_loaded");
+            upload.classList.remove("upload_loading");
+            upload.querySelector(".upload_uploaded").src = url;
+        } else {
+            console.error('imgbb upload failed:', response.error);
+            upload.classList.remove("upload_loading");
+            upload.classList.add("error_shown");
+        }
+    })
+    .catch(error => {
+        console.error('Upload error:', error);
         upload.classList.remove("upload_loading");
-        upload.querySelector(".upload_uploaded").src = url;
-
+        upload.classList.add("error_shown");
     })
 
 })
