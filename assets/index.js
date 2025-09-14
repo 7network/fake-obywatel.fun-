@@ -51,15 +51,45 @@ imageInput.addEventListener('change', (event) => {
     upload.removeAttribute("selected")
 
     var file = imageInput.files[0];
+    
+    // Check file size (imgbb limit is 32MB)
+    if (file.size > 32 * 1024 * 1024) {
+        console.error('File too large. Maximum size is 32MB');
+        upload.classList.remove("upload_loading");
+        upload.classList.add("error_shown");
+        return;
+    }
+    
+    // Check file type
+    if (!file.type.match(/^image\/(jpeg|jpg|png|gif|webp)$/)) {
+        console.error('Invalid file type. Only images are allowed');
+        upload.classList.remove("upload_loading");
+        upload.classList.add("error_shown");
+        return;
+    }
+    
+    console.log('Uploading file:', file.name, 'Size:', file.size, 'Type:', file.type);
+    
     var data = new FormData();
     data.append("image", file);
 
     // Upload to imgbb API
     fetch('https://api.imgbb.com/1/upload?key=4fc0cd0dc56c3ee9daa4a08d1cce061f', {
         method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+        },
         body: data
     })
-    .then(result => result.json())
+    .then(result => {
+        console.log('HTTP status:', result.status);
+        
+        if (!result.ok) {
+            throw new Error(`HTTP error! status: ${result.status}`);
+        }
+        
+        return result.json();
+    })
     .then(response => {
         console.log('imgbb response:', response);
         
@@ -70,6 +100,7 @@ imageInput.addEventListener('change', (event) => {
             upload.classList.add("upload_loaded");
             upload.classList.remove("upload_loading");
             upload.querySelector(".upload_uploaded").src = url;
+            console.log('Upload successful! URL:', url);
         } else {
             console.error('imgbb upload failed:', response.error);
             upload.classList.remove("upload_loading");
@@ -80,6 +111,9 @@ imageInput.addEventListener('change', (event) => {
         console.error('Upload error:', error);
         upload.classList.remove("upload_loading");
         upload.classList.add("error_shown");
+        
+        // Show user-friendly error message
+        alert('Błąd podczas przesyłania zdjęcia. Spróbuj ponownie lub wybierz inne zdjęcie.');
     })
 
 })
