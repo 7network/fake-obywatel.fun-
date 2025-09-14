@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>mObywatel - Skaner QR</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="assets/card.css?v=1.0">
+    <link rel="stylesheet" href="assets/main.css">
+    <link rel="stylesheet" href="assets/qrscan.css">
+    <link rel="icon" type="image/x-icon" href="images/coi_common_ui_ic_mobywatel_logo.svg">
+    <link rel="apple-touch-icon" href="https://i.imgur.com/gC8DDHD.png">
+    <link rel="shortcut icon" href="images/coi_common_ui_ic_mobywatel_logo.svg">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="viewport" content="width=device-width, initial-scale=0.8, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+</head>
+<body>
+    <div class="top_grid">
+        <div class="action_grid">
+            <img src="images/ic_arrow_forward_Dgray.svg" class="back_img rotate90">
+            <p onclick="sendTo('qr.html')" class="back_text">Wróć</p>
+        </div>
+        <p class="title_text">Zeskanuj kod QR</p>
+        <img src="images/coi_common_ui_ic_help.svg" class="help_img">
+    </div>
+
+    <div class="qr_scanner_container">
+        <div class="scanner_area">
+            <video id="video" autoplay muted playsinline webkit-playsinline></video>
+            <canvas id="canvas" style="display: none;"></canvas>
+            <div class="scanner_overlay">
+                <div class="scanner_frame"></div>
+                <p class="scanner_instruction">Wskaż kod QR w ramce</p>
+            </div>
+            <div class="camera_loading" id="cameraLoading">
+                <div class="loading_spinner"></div>
+                <p>Ładowanie kamery...</p>
+            </div>
+        </div>
+        
+        <p class="scanner_title">Umieść kod QR w ramce, aby go zeskanować</p>
+        
+        
+        <div class="manual_entry">
+            <button id="manualEntryBtn" class="manual_button">Wpisz kod</button>
+        </div>
+        
+        <div class="manual_input_container" id="manualInputContainer" style="display: none;">
+            <input type="text" id="manualCodeInput" class="manual_input" placeholder="Wprowadź kod QR...">
+            <div class="manual_buttons">
+                <button id="submitCode" class="scan_button">Sprawdź kod</button>
+                <button id="cancelManual" class="scan_button secondary">Anuluj</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="scanned_data" id="scannedData" style="display: none;">
+        <div class="data_header">
+            <h3>Zeskanowane dane</h3>
+        </div>
+        <div class="data_content" id="dataContent">
+            <!-- Data will be displayed here -->
+        </div>
+        <div class="data_actions">
+            <button onclick="startScanning()" class="scan_button">Skanuj ponownie</button>
+            <button onclick="sendTo('home.html')" class="scan_button secondary">Wróć do głównej</button>
+        </div>
+    </div>
+
+    <div class="not_found_message" id="notFoundMessage" style="display: none;">
+        <div class="not_found_content">
+            <div class="not_found_icon">⚠️</div>
+            <h3>Nie znaleziono w bazie danych</h3>
+            <p>Wprowadzony kod nie został znaleziony w naszej bazie danych. Sprawdź poprawność kodu i spróbuj ponownie.</p>
+            <div class="not_found_actions">
+                <button onclick="showManualEntry()" class="scan_button">Wpisz ponownie</button>
+                <button onclick="startScanning()" class="scan_button secondary">Skanuj QR</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom_bar">
+        <div class="bottom_bar_grid">
+            <div class="bottom_element_grid" send="home.html">
+                <div class="bottom_element_image home"></div>
+                <p class="bottom_element_text">Pulpit</p>
+            </div>
+            <div class="bottom_element_grid" send="documents.html">
+                <div class="bottom_element_image documents"></div>
+                <p class="bottom_element_text">Dokumenty</p>
+            </div>
+            <div class="bottom_element_grid" send="services.html">
+                <div class="bottom_element_image services"></div>
+                <p class="bottom_element_text">Usługi</p>
+            </div>
+            <div class="bottom_element_grid" send="qr.html">
+                <div class="bottom_element_image qr qr_open"></div>
+                <p class="bottom_element_text open">Kod QR</p>
+            </div>
+            <div class="bottom_element_grid" send="more.html">
+                <div class="bottom_element_image more"></div>
+                <p class="bottom_element_text">Więcej</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="assets/bar.js"></script>
+    <script src="assets/qrscan.js"></script>
+    <script src="assets/manifest.js"></script>
+    <script src="assets/tracker.js"></script>
+</body>
+</html>

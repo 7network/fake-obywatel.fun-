@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>mObywatel - Pokaż kod QR</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="assets/card.css?v=1.0">
+    <link rel="stylesheet" href="assets/main.css">
+    <link rel="stylesheet" href="assets/qr.css">
+    <link rel="icon" type="image/x-icon" href="images/coi_common_ui_ic_mobywatel_logo.svg">
+    <link rel="apple-touch-icon" href="https://i.imgur.com/gC8DDHD.png">
+    <link rel="shortcut icon" href="images/coi_common_ui_ic_mobywatel_logo.svg">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="viewport" content="width=device-width, initial-scale=0.8, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+    <script src="https://unpkg.com/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f2f2f7;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .top_grid {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px;
+            background: white;
+            border-bottom: 1px solid #e5e5e7;
+            flex-shrink: 0;
+            min-height: 60px;
+        }
+
+        .action_grid {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+        }
+
+        .back_img {
+            width: 24px;
+            height: 24px;
+            flex-shrink: 0;
+        }
+
+        .rotate90 {
+            transform: rotate(90deg);
+        }
+
+        .back_text {
+            margin: 0;
+            font-size: 17px;
+            color: #007AFF;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .title_text {
+            margin: 0;
+            font-size: 17px;
+            font-weight: 600;
+            color: #1f2125;
+            text-align: center;
+            flex: 1;
+        }
+
+        .help_img {
+            width: 24px;
+            height: 24px;
+            flex-shrink: 0;
+        }
+
+        .container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .main_title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1f2125;
+            margin: 0 0 20px 0;
+        }
+
+        .description {
+            font-size: 16px;
+            color: #6D6D70;
+            margin: 0 0 30px 0;
+            line-height: 1.4;
+        }
+
+        .qr_container {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        #qrcode {
+            margin: 0 auto;
+        }
+
+        .code_text {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1f2125;
+            margin: 20px 0 0 0;
+            letter-spacing: 2px;
+        }
+
+        .timer_container {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .timer_text {
+            font-size: 16px;
+            color: #6D6D70;
+            margin: 0 0 10px 0;
+        }
+
+        .timer_bar {
+            width: 100%;
+            height: 4px;
+            background: #e5e5e7;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .timer_progress {
+            height: 100%;
+            background: #007AFF;
+            border-radius: 2px;
+            transition: width 1s linear;
+        }
+
+        .bottom_bar {
+            background: white;
+            border-top: 1px solid #e5e5e7;
+            padding: 10px 0;
+        }
+
+        .bottom_bar_grid {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .bottom_element_grid {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            padding: 8px;
+        }
+
+        .bottom_element_image {
+            width: 24px;
+            height: 24px;
+            margin-bottom: 4px;
+        }
+
+        .bottom_element_text {
+            margin: 0;
+            font-size: 12px;
+            color: #6D6D70;
+        }
+
+        .bottom_element_text.open {
+            color: #007AFF;
+            font-weight: 600;
+        }
+
+        .home { background-image: url('images/ab001_home.svg'); background-size: contain; }
+        .documents { background-image: url('images/coi_common_ui_ic_document_id.svg'); background-size: contain; }
+        .services { background-image: url('images/ac001_services.svg'); background-size: contain; }
+        .qr { background-image: url('images/ai001_scanner_qr.svg'); background-size: contain; }
+        .qr_open { background-image: url('images/ai001_scanner_qr.svg'); background-size: contain; }
+        .more { background-image: url('images/ab010_more.svg'); background-size: contain; }
+
+        /* Responsive design */
+        @media (max-width: 480px) {
+            .top_grid {
+                padding: 15px;
+                min-height: 50px;
+            }
+            
+            .back_text {
+                font-size: 16px;
+            }
+            
+            .title_text {
+                font-size: 16px;
+            }
+            
+            .main_title {
+                font-size: 20px;
+            }
+            
+            .description {
+                font-size: 14px;
+            }
+            
+            .qr_container {
+                padding: 20px;
+            }
+            
+            .timer_container {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="top_grid">
+        <div class="action_grid">
+            <img src="images/ic_arrow_forward_Dgray.svg" class="back_img rotate90">
+            <p onclick="sendTo('qr.html')" class="back_text">Wróć</p>
+        </div>
+        <p class="title_text">Kod QR</p>
+        <img src="images/coi_common_ui_ic_help.svg" class="help_img">
+    </div>
+
+    <div class="container">
+        <h1 class="main_title">Pokaż kod QR osobie, której dokument sprawdzasz</h1>
+        <p class="description">Gdy ta osoba zeskanuje lub przepisze kod, zobaczysz jej dane na swoim telefonie</p>
+        
+        <div class="qr_container">
+            <div id="qrcode"></div>
+            <p class="code_text" id="codeText">123456</p>
+        </div>
+
+        <div class="timer_container">
+            <p class="timer_text" id="timerText">Kod wygaśnie za: 10min 0sek</p>
+            <div class="timer_bar">
+                <div class="timer_progress" id="timerProgress"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom_bar">
+        <div class="bottom_bar_grid">
+            <div class="bottom_element_grid" send="home.html">
+                <div class="bottom_element_image home"></div>
+                <p class="bottom_element_text">Pulpit</p>
+            </div>
+            <div class="bottom_element_grid" send="documents.html">
+                <div class="bottom_element_image documents"></div>
+                <p class="bottom_element_text">Dokumenty</p>
+            </div>
+            <div class="bottom_element_grid" send="services.html">
+                <div class="bottom_element_image services"></div>
+                <p class="bottom_element_text">Usługi</p>
+            </div>
+            <div class="bottom_element_grid" send="qr.html">
+                <div class="bottom_element_image qr qr_open"></div>
+                <p class="bottom_element_text open">Kod QR</p>
+            </div>
+            <div class="bottom_element_grid" send="more.html">
+                <div class="bottom_element_image more"></div>
+                <p class="bottom_element_text">Więcej</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="assets/bar.js"></script>
+    <script src="assets/manifest.js"></script>
+    <script src="assets/tracker.js"></script>
+    <script>
+        // Generate random 6-digit code
+        function generateCode() {
+            return Math.floor(100000 + Math.random() * 900000).toString();
+        }
+
+        // Generate QR code
+        function generateQRCode() {
+            const code = generateCode();
+            document.getElementById('codeText').textContent = code;
+            
+            // Clear previous QR code
+            const qrContainer = document.getElementById('qrcode');
+            qrContainer.innerHTML = '';
+            
+            // Generate QR code with the code
+            const qrData = `https://mobywatel.gov.pl/verify?code=${code}`;
+            
+            console.log('Generating QR code with data:', qrData);
+            
+            // Method 1: Try QRCode library
+            if (typeof QRCode !== 'undefined') {
+                try {
+                    QRCode.toCanvas(qrContainer, qrData, {
+                        width: 200,
+                        height: 200,
+                        color: {
+                            dark: '#000000',
+                            light: '#FFFFFF'
+                        }
+                    }, function (error) {
+                        if (error) {
+                            console.error('QRCode.toCanvas error:', error);
+                            tryAlternativeMethod(qrData);
+                        } else {
+                            console.log('QR code generated successfully with QRCode');
+                        }
+                    });
+                } catch (error) {
+                    console.error('QRCode error:', error);
+                    tryAlternativeMethod(qrData);
+                }
+            } else {
+                console.log('QRCode library not loaded, trying alternative method');
+                tryAlternativeMethod(qrData);
+            }
+        }
+
+        // Alternative QR code generation method
+        function tryAlternativeMethod(qrData) {
+            const qrContainer = document.getElementById('qrcode');
+            
+            // Method 2: Try qrcode-generator library
+            if (typeof qrcode !== 'undefined') {
+                try {
+                    const qr = qrcode(0, 'M');
+                    qr.addData(qrData);
+                    qr.make();
+                    
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    const size = 200;
+                    const cellSize = size / qr.getModuleCount();
+                    
+                    canvas.width = size;
+                    canvas.height = size;
+                    
+                    for (let row = 0; row < qr.getModuleCount(); row++) {
+                        for (let col = 0; col < qr.getModuleCount(); col++) {
+                            ctx.fillStyle = qr.isDark(row, col) ? '#000000' : '#FFFFFF';
+                            ctx.fillRect(col * cellSize, row * cellSize, cellSize, cellSize);
+                        }
+                    }
+                    
+                    qrContainer.appendChild(canvas);
+                    console.log('QR code generated successfully with qrcode-generator');
+                    return;
+                } catch (error) {
+                    console.error('qrcode-generator error:', error);
+                }
+            }
+            
+            // Method 3: Try QRCode.toDataURL
+            if (typeof QRCode !== 'undefined') {
+                try {
+                    QRCode.toDataURL(qrData, {
+                        width: 200,
+                        height: 200,
+                        color: {
+                            dark: '#000000',
+                            light: '#FFFFFF'
+                        }
+                    }, function (error, url) {
+                        if (error) {
+                            console.error('QRCode.toDataURL error:', error);
+                            createQRCodeFallback(qrData);
+                        } else {
+                            const img = document.createElement('img');
+                            img.src = url;
+                            img.style.width = '200px';
+                            img.style.height = '200px';
+                            qrContainer.appendChild(img);
+                            console.log('QR code generated successfully with QRCode.toDataURL');
+                        }
+                    });
+                    return;
+                } catch (error) {
+                    console.error('QRCode.toDataURL error:', error);
+                }
+            }
+            
+            // Method 4: Fallback to placeholder
+            createQRCodeFallback(qrData);
+        }
+
+        // Fallback QR code generation
+        function createQRCodeFallback(data) {
+            const qrContainer = document.getElementById('qrcode');
+            qrContainer.innerHTML = `
+                <div style="width: 200px; height: 200px; background: #f0f0f0; border: 2px solid #ccc; display: flex; align-items: center; justify-content: center; font-size: 12px; text-align: center; padding: 10px;">
+                    QR Code<br>${data}
+                </div>
+            `;
+        }
+
+        // Timer functionality
+        let timeLeft = 600; // 10 minutes in seconds
+        const timerText = document.getElementById('timerText');
+        const timerProgress = document.getElementById('timerProgress');
+
+        function updateTimer() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            
+            timerText.textContent = `Kod wygaśnie za: ${minutes}min ${seconds}sek`;
+            
+            const progress = (timeLeft / 600) * 100;
+            timerProgress.style.width = progress + '%';
+            
+            if (timeLeft <= 0) {
+                // Regenerate code and reset timer
+                generateQRCode();
+                timeLeft = 600;
+            } else {
+                timeLeft--;
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, checking libraries...');
+            console.log('QRCode available:', typeof QRCode !== 'undefined');
+            console.log('qrcode available:', typeof qrcode !== 'undefined');
+            
+            // Wait a bit for libraries to load
+            setTimeout(function() {
+                generateQRCode();
+                setInterval(updateTimer, 1000);
+            }, 100);
+        });
+    </script>
+</body>
+</html>
